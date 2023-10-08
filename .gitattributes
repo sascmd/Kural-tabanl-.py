@@ -1,2 +1,100 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+df=pd.read_csv(r"C:\Users\uguro\OneDrive\Masaüstü\persona.csv")
+
+### Soru 1: persona.csvdosyasını okutunuz ve veri seti ile ilgili genel bilgileri gösteriniz
+def general_info(dataframe):
+    print("#### HEAD ####")
+    print(df.head())
+    print("#### TAIL ####")
+    print(df.tail())
+    print("#### INDEX ####")
+    print(df.index)
+    print("#### INFO ####")
+    print(df.info)
+    print("#### NDIM ####")
+    print(df.ndim)
+    print("#### SIZE ####")
+    print(df.size)
+    print("#### COLOUMNS ####")
+    print(df.columns)
+    print("#### DESCRIBE ####")
+    print(df.describe().T)
+    print("#### ISNULL ####")
+    print(df.isnull().sum())
+general_info(df)
+
+
+### Soru 2: Kaç uniqueSOURCE vardır? Frekansları nedir?###
+df["SOURCE"].unique()
+df["SOURCE"].value_counts()
+
+
+### Soru 3:Kaç uniquePRICE vardır?
+
+df["PRICE"].nunique()
+
+### Soru 4:Hangi PRICE'dankaçar tane satış gerçekleşmiş?
+
+df["PRICE"].value_counts()
+
+### Soru 5:Hangi ülkeden kaçar tane satış olmuş?
+
+df["COUNTRY"].value_counts()
+df.groupby("COUNTRY")["PRICE"].count()
+
+###Soru 6:Ülkelere göre satışlardan toplam ne kadar kazanılmış?
+
+df.groupby("COUNTRY").agg({"PRICE":"sum"})
+
+
+###Soru 7:SOURCE türlerine göre satışsayıları nedir?
+
+df.groupby("SOURCE").agg({"PRICE":"sum"})
+
+### Soru 8:Ülkelere göre PRICE ortalamaları nedir?
+
+
+df.groupby("COUNTRY").agg({"PRICE":"mean"})
+
+
+### Soru 9:SOURCE'laragöre PRICE ortalamaları nedir?
+
+df.groupby("SOURCE").agg({"PRICE":"mean"})
+
+#### Soru 10: COUNTRY-SOURCE kırılımındaPRICE ortalamaları nedir?
+
+df.groupby(["COUNTRY","SOURCE"]).agg({"PRICE":"mean"})
+
+###Görev 2:  COUNTRY, SOURCE, SEX, AGE kırılımındaortalama kazançlar nedir?
+
+df.groupby(["COUNTRY","SOURCE","SEX","AGE"]).agg({"PRICE":"mean"})
+
+### Görev 3:  ÇıktıyıPRICE’agöre sıralayınız.
+
+df.groupby(["COUNTRY","SOURCE","SEX","AGE"]).agg({"PRICE":"mean"}).sort_values("PRICE",ascending=False)
+
+agg_df = df.groupby(["COUNTRY","SOURCE","SEX","AGE"]).agg({"PRICE":"mean"}).sort_values("PRICE",ascending=False)
+
+### Görev 4:  Indeksteyer alan isimleri değişken ismine çeviriniz.
+agg_df.reset_index()
+
+
+#### Görev 5:  Age değişkenini kategorik değişkene çeviriniz ve agg_df’eekleyiniz
+
+df["AGE"].astype("category")
+# AGE değişkeninin nerelerden bölüneceğini belirtelim:
+bins = [0, 18, 23, 30, 40, agg_df["AGE"].max()]
+
+# Bölünen noktalara karşılık isimlendirmelerin ne olacağını ifade edelim:
+mylabels = ['0_18', '19_23', '24_30', '31_40', '41_' + str(agg_df["AGE"].max())]
+
+# age'i bölelim:
+agg_df["age_cat"] = pd.cut(agg_df["AGE"], bins, labels=mylabels)
+agg_df.head()
+
+
+### Görev 6:  Yeni seviye tabanlı müşterileri (persona) tanımlayınız.
+
+
